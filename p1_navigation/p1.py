@@ -167,13 +167,20 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
     eps = eps_start                    # initialize epsilon
     
     #env_info = env.reset(train_mode=True)[brain_name]
+    i_episode = 0
 
-    for i_episode in range(1, n_episodes+1):
+    #for i_episode in range(1, n_episodes+1):
+    while True:
+        i_episode += 1
+        
         env_info = env.reset(train_mode=True)[brain_name]
         #state = np.uint8(255 * np.array(env_info.visual_observations[0]))
         state = np.uint8(255 * np.array(env_info.vector_observations[0]))
         score = 0
-        for t in range(max_t):
+        done = False
+
+        while done is False:
+        #for t in range(max_t):
             action = agent.act(state, eps)
             env_info = env.step(action)[brain_name]
             #next_state, reward, done, _ = env.step(action)
@@ -186,8 +193,9 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
             agent.step(state, action, reward, next_state, done)
             state = next_state
             score += reward
-            if done:
-                break 
+            # if done:
+            #     break 
+
         scores_window.append(score)       # save most recent score
         scores.append(score)              # save most recent score
         eps = max(eps_end, eps_decay*eps) # decrease epsilon
@@ -198,6 +206,7 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, np.mean(scores_window)))
             torch.save(agent.qnetwork_local.state_dict(), 'checkpoint.pth')
             break
+    
     return scores
 
 scores = dqn()
