@@ -4,11 +4,15 @@
 
 ### Deep Q-Network (DQN)
 
-Reinforcement learning is unstable or divergent when a nonlinear function approximator such as a neural network is used to represent Q. This instability comes from the correlations present in the sequence of observations, the fact that small updates to Q may significantly change the policy of the agent and the data distribution, and the correlations between Q and the target values.
+A DQN, or Deep Q-Network, approximates a state-value function in a Q-Learning framework with a neural network. In the Atari Games case, they take in several frames of the game as an input and output state values for each action as an output.
 
-The technique used experience replay, a biologically inspired mechanism that uses a random sample of prior actions instead of the most recent action to proceed. This removes correlations in the observation sequence and smooths changes in the data distribution. Iterative updates adjust Q towards target values that are only periodically updated, further reducing correlations with the target.
+It is usually used in conjunction with Experience Replay, for storing the episode steps in memory for off-policy learning, where samples are drawn from the replay memory at random. Additionally, the Q-Network is usually optimized towards a frozen target network that is periodically updated with the latest weights every k steps (where k is a hyperparameter). The latter makes training more stable by preventing short-term oscillations from a moving target. The former tackles autocorrelation that would occur from on-line learning, and having a replay memory makes the problem more like a supervised learning problem.
 
-### hyperparameters
+### Illustration of DQN Architecture ([Source](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf))
+
+![](./dqn.png)
+
+### Hyperparameters
 
 ```python
 BUFFER_SIZE = int(1e5)  # replay buffer size
@@ -157,5 +161,5 @@ Currently, in order to determine which states are (or are not) valuable, we have
   * https://classroom.udacity.com/nanodegrees/nd893
   * https://github.com/udacity/deep-reinforcement-learning
 
-* wikipedia
-  * https://en.wikipedia.org/wiki/Q-learning#Deep_Q-learning
+* papers with code 
+  * https://paperswithcode.com/method/dqn
