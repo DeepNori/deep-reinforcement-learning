@@ -15,6 +15,7 @@ from ddpg_agent import Agent
 # Instantiate the Environment and Agent
 
 # Start the Environment
+#env = UnityEnvironment(file_name='../unity-env/Reacher_Linux_NoVis/Reacher.x86')
 env = UnityEnvironment(file_name='../unity-env/Reacher.app')
 
 # get the default brain
@@ -39,11 +40,11 @@ print('There are {} agents. Each observes a state with length: {}'.format(states
 print('The state for the first agent looks like:', states[0])
 
 # init agent 
-agent = Agent(state_size=state_size, action_size=action_size, random_seed=0)
+agent = Agent(state_size=state_size, action_size=action_size, random_seed=10)
 
 # Train the Agent with DDPG
-def ddpg(print_every=100):
-    scores_deque = deque(maxlen=print_every)
+def ddpg():
+    scores_deque = deque(maxlen=100)
     scores = []
     i_episode = 0
 
@@ -70,9 +71,9 @@ def ddpg(print_every=100):
         scores.append(score)
         average_score = np.mean(scores_deque)
 
-        print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, average_score), end="")
-        if i_episode % print_every == 0:
-            print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, average_score))
+        print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(i_episode, average_score, score), end="")
+        if i_episode % 10 == 0:
+            print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(i_episode, average_score, score))
 
         if i_episode >= 100 and average_score >= 30.0:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, average_score))
@@ -84,6 +85,7 @@ def ddpg(print_every=100):
 
 scores = ddpg()
 
+# plot
 fig = plt.figure()
 ax = fig.add_subplot(111)
 plt.plot(np.arange(1, len(scores)+1), scores)
