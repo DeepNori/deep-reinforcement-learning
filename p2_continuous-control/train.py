@@ -16,7 +16,8 @@ from ddpg_agent import Agent
 
 # Start the Environment
 #env = UnityEnvironment(file_name='../unity-env/Reacher_Linux_NoVis/Reacher.x86')
-env = UnityEnvironment(file_name='../unity-env/Reacher.app')
+#env = UnityEnvironment(file_name='../unity-env/Reacher.app')
+env = UnityEnvironment(file_name='../unity-env/Reacher20.app')
 
 # get the default brain
 brain_name = env.brain_names[0]
@@ -40,7 +41,7 @@ print('There are {} agents. Each observes a state with length: {}'.format(states
 print('The state for the first agent looks like:', states[0])
 
 # init agent 
-agent = Agent(state_size=state_size, action_size=action_size, random_seed=10)
+agent = Agent(state_size=state_size, action_size=action_size, random_seed=7, num_agents=num_agents)
 
 # Train the Agent with DDPG
 def ddpg():
@@ -50,25 +51,34 @@ def ddpg():
 
     while True:
         i_episode += 1
-        env_info = env.reset(train_mode=True)[brain_name]      # reset the environment    
-        state = env_info.vector_observations[0]                # get the current state
+        env_info = env.reset(train_mode=True)[brain_name]       # reset the environment    
+        states = env_info.vector_observations                   # get the current states
         agent.reset()
-        score = 0
-        done = False
+        #score = 0
+        episode_scores = np.zeros(num_agents)
+        #done = False
 
-        while done is False:
-            action = agent.act(state)
-            env_info = env.step(action)[brain_name]
-            next_state = env_info.vector_observations[0]
-            reward = env_info.rewards[0]
-            done = env_info.local_done[0]
+        #while done is False:
+        while True:
+            actions = agent.act(states)
+            env_info = env.step(actions)[brain_name]
+            next_states = env_info.vector_observations
+            rewards = env_info.rewards
+            dones = env_info.local_done
 
-            agent.step(state, action, reward, next_state, done)
-            state = next_state
-            score += reward
+            agent.step(states, actions, rewards, next_states, dones)
+            states = next_states
+            episode_scores += np.array(rewards)
 
-        scores_deque.append(score)
-        scores.append(score)
+            if np.any(dones):
+                break
+
+        #
+        print('\r', episode_scores)
+
+        score = np.mean(episode_scores)
+        scores_deque.append(episode_scores)
+        scores.append(episode_scores)
         average_score = np.mean(scores_deque)
 
         print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(i_episode, average_score, score), end="")
