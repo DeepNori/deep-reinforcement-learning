@@ -43,7 +43,7 @@ print('The state for the first agent looks like:', states[0])
 # init agent 
 agent = Agent(state_size=state_size, action_size=action_size, random_seed=7, num_agents=num_agents)
 
-# Train the Agent with DDPG
+# DDPG
 def ddpg():
     scores_deque = deque(maxlen=100)
     scores = []
@@ -54,11 +54,8 @@ def ddpg():
         env_info = env.reset(train_mode=True)[brain_name]       # reset the environment    
         states = env_info.vector_observations                   # get the current states
         agent.reset()
-        #score = 0
         episode_scores = np.zeros(num_agents)
-        #done = False
 
-        #while done is False:
         while True:
             actions = agent.act(states)
             env_info = env.step(actions)[brain_name]
@@ -74,7 +71,7 @@ def ddpg():
                 break
 
         #
-        print('\r', episode_scores)
+        #print('\r', episode_scores)
 
         score = np.mean(episode_scores)
         scores_deque.append(episode_scores)
@@ -82,6 +79,8 @@ def ddpg():
         average_score = np.mean(scores_deque)
 
         print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(i_episode, average_score, score), end="")
+        #print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(i_episode, average_score, score))
+        
         if i_episode % 10 == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(i_episode, average_score, score))
 
@@ -93,6 +92,7 @@ def ddpg():
 
     return scores
 
+# Train the Agent with DDPG
 scores = ddpg()
 
 # plot
